@@ -1,0 +1,46 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 全局设置中文+负号完美显示
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 多边形边数
+n_list = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+pi_real = np.pi
+
+pi_approx = []
+error_list = []
+h_list = []
+
+for n in n_list:
+    pi_n = n * np.sin(np.pi / n)
+    pi_approx.append(pi_n)
+    error = abs(pi_real - pi_n)
+    error_list.append(error)
+    h_list.append(1.0 / n)
+
+# 打印结果
+print("=" * 60)
+print(f"{'n':<5} {'π近似值':<20} {'误差':<15}")
+print("=" * 60)
+for n, p, e in zip(n_list, pi_approx, error_list):
+    print(f"{n:<5} {p:<20.12f} {e:<15.2e}")
+
+# 计算收敛阶
+log_e = np.log(error_list[-2:])
+log_h = np.log(h_list[-2:])
+slope = (log_e[1] - log_e[0]) / (log_h[1] - log_h[0])
+print(f"\n理论收敛阶：2.00")
+print(f"实际计算收敛阶：{slope:.2f}")
+
+# 绘图
+plt.figure(figsize=(8, 6))
+plt.loglog(h_list, error_list, 'o-')
+plt.grid(True, which="both")
+plt.xlabel("步长 h = 1/n")
+plt.ylabel("误差 e_n = |π - π_n|")
+plt.title("正n边形逼近圆周率 误差与收敛阶分析")
+plt.text(0.0015, 1e-5, f"收敛阶 slope = {slope:.2f}", color='red')
+plt.tight_layout()
+plt.show()
